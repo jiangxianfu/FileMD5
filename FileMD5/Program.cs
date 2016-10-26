@@ -12,6 +12,7 @@ namespace FileMD5
         static void Main(string[] args)
         {
             //GetMD5Hash(@"D:\Users\jiangxf\Downloads\test\Assistant_Setup_2_0_0_6.exe");
+
             if (args.Length == 0)
             {
                 Console.WriteLine("请输入目录名称");
@@ -30,15 +31,18 @@ namespace FileMD5
                 curr.Create();
             }
             var allfiles = root.GetFiles("*.*", SearchOption.AllDirectories);
-            List<string> checklist = new List<string>();
+            Dictionary<string, string> checklist = new Dictionary<string, string>();
+            File.AppendAllText("log.txt", DateTime.Now.ToString() + "\n--------------\n");
             foreach (var item in allfiles)
             {
                 string hash = GetMD5Hash(item.FullName);
                 if (string.IsNullOrEmpty(hash))
                     continue;
-                if (checklist.Contains(hash))
+                if (checklist.ContainsKey(hash))
                 {
                     Console.WriteLine("重复{0}", item.Name);
+                    string logitem = string.Format("已存在:{0}-->被移除:{1}\n", checklist[hash], item.FullName);
+                    File.AppendAllText("log.txt", logitem);
                     try
                     {
                         File.Move(item.FullName, Path.Combine(curr.FullName, item.Name));
@@ -57,7 +61,7 @@ namespace FileMD5
                 }
                 else
                 {
-                    checklist.Add(hash);
+                    checklist.Add(hash, item.FullName);
                 }
             }
         }
