@@ -11,8 +11,6 @@ namespace FileMD5
     {
         static void Main(string[] args)
         {
-            //GetMD5Hash(@"D:\Users\jiangxf\Downloads\test\Assistant_Setup_2_0_0_6.exe");
-
             if (args.Length == 0)
             {
                 Console.WriteLine("请输入目录名称");
@@ -45,7 +43,7 @@ namespace FileMD5
                     File.AppendAllText("log.txt", logitem);
                     try
                     {
-                        File.Move(item, Path.Combine(curr.FullName, item));
+                        File.Move(item, Path.Combine(curr.FullName, Path.GetFileName(item)));
                     }
                     catch
                     {
