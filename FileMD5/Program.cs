@@ -30,28 +30,28 @@ namespace FileMD5
             {
                 curr.Create();
             }
-            var allfiles = root.GetFiles("*.*", SearchOption.AllDirectories);
+            var allfiles = Directory.EnumerateFiles(root.FullName, "*.*", SearchOption.AllDirectories);
             Dictionary<string, string> checklist = new Dictionary<string, string>();
             File.AppendAllText("log.txt", DateTime.Now.ToString() + "\n--------------\n");
             foreach (var item in allfiles)
             {
-                string hash = GetMD5Hash(item.FullName);
+                string hash = GetMD5Hash(item);
                 if (string.IsNullOrEmpty(hash))
                     continue;
                 if (checklist.ContainsKey(hash))
                 {
-                    Console.WriteLine("重复{0}", item.Name);
-                    string logitem = string.Format("已存在:{0}-->被移除:{1}\n", checklist[hash], item.FullName);
+                    Console.WriteLine("重复{0}", item);
+                    string logitem = string.Format("已存在:{0}-->被移除:{1}\n", checklist[hash], item);
                     File.AppendAllText("log.txt", logitem);
                     try
                     {
-                        File.Move(item.FullName, Path.Combine(curr.FullName, item.Name));
+                        File.Move(item, Path.Combine(curr.FullName, item));
                     }
                     catch
                     {
                         try
                         {
-                            File.Move(item.FullName, Path.Combine(curr.FullName, Path.GetFileNameWithoutExtension(item.Name) + "_" + Guid.NewGuid().ToString("N") + Path.GetExtension(item.Name)));
+                            File.Move(item, Path.Combine(curr.FullName, Path.GetFileNameWithoutExtension(item) + "_" + Guid.NewGuid().ToString("N") + Path.GetExtension(item)));
                         }
                         catch (Exception ex)
                         {
@@ -61,7 +61,7 @@ namespace FileMD5
                 }
                 else
                 {
-                    checklist.Add(hash, item.FullName);
+                    checklist.Add(hash, item);
                 }
             }
         }
